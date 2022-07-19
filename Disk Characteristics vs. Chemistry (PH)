@@ -1,0 +1,732 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "0af24ad9",
+   "metadata": {},
+   "source": [
+    "# Disk Characteristics vs. Chemistry\n",
+    "\n",
+    "Overall conclusions:\n",
+    "- Interesting trend between multi-star systems and abundance of chemistry. Has this been studied? If not, recommend additional multi-star targets\n",
+    "    - What does this mean if there is a true trend? Tidal interactions with neighboring stars, different conditions in the disk? Does it mean that more chemicals are present, or we are able to \"see\" them (optical depth). Could be the latter, less dust so can see through to the gas. What if it means there is more chemistry present, what does that imply for planet formation and even habitability?\n",
+    "    \n",
+    "- Some sources have detections for all volatiles in our list. Why are they special? "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "7fdda220",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from astropy.io import fits\n",
+    "import pandas as pd\n",
+    "from tabulate import tabulate\n",
+    "import matplotlib.pyplot as plt\n",
+    "import numpy as np"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 28,
+   "id": "9f7254ae",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# reading two csv files\n",
+    "Characteristics = pd.read_csv(r\"C:\\Users\\pheretz\\Desktop\\URSI_Internship\\Sources Info Sheet - Catalog (7.19).csv\")\n",
+    "Chemistry = pd.read_csv(r\"C:\\Users\\pheretz\\Desktop\\URSI_Internship\\Sources Info Sheet - Molecular Catalog (7.19).csv\")\n",
+    "  \n",
+    "# using merge function by setting how='inner'\n",
+    "output1 = pd.merge(Characteristics, Chemistry, \n",
+    "                   on='Star', \n",
+    "                   how='outer')\n",
+    "  \n",
+    "# displaying result\n",
+    "#print(output1)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "21130e7c",
+   "metadata": {},
+   "source": [
+    "# Data Set Statistics"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 33,
+   "id": "505ebefe",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Total sources = 31\n",
+      "Total sources with rings = 22\n",
+      "Total sources with spirals = 5\n"
+     ]
+    }
+   ],
+   "source": [
+    "# I want to run stats like Total stars = 31, total spirals = 5, total \n",
+    "\n",
+    "print('Total sources = '+str(output1['Star'].count()))\n",
+    "print('Total sources with rings = '+str(output1['Disk_has_Rings'].value_counts().TRUE))\n",
+    "print('Total sources with spirals = '+str(output1['Disk_has_spirals'].value_counts().TRUE))\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f903dcbd",
+   "metadata": {},
+   "source": [
+    "#  OH Detections vs. Characteristics"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "id": "8ae1858c",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "         Star Disk_has_Rings Disk_has_spirals Disk_Asymmetry Star_system  \\\n",
+      "9      AS 205          FALSE             TRUE           TRUE      Triple   \n",
+      "17    WaOph 6           TRUE             TRUE           TRUE      Single   \n",
+      "19  HD 163296           TRUE            FALSE           TRUE      Single   \n",
+      "21     TW Cha            -99              -99            -99      Binary   \n",
+      "22     VZ Cha            -99              -99            -99         NaN   \n",
+      "23     GQ Lup           TRUE            FALSE            -99      Binary   \n",
+      "\n",
+      "   Spectral_Type  log_tstar  OH_23.2_microns  OH_23.2_microns_uncertainty  \\\n",
+      "9             K5   5.800000     1.630000e-16                 5.800000e-18   \n",
+      "17            K6   5.500000     4.610000e-17                 1.300000e-18   \n",
+      "19            A1   7.100000     4.860000e-15                 6.130000e-16   \n",
+      "21            K7   6.633468     1.640000e-17                 4.000000e-19   \n",
+      "22          M0.5   5.900000     2.560000e-17                 6.000000e-19   \n",
+      "23          K5.0   6.000000     3.260000e-17                 1.200000e-18   \n",
+      "\n",
+      "    OH_27.6_microns  OH_27.6_microns_uncertainty  \n",
+      "9      4.770000e-16                 6.800000e-18  \n",
+      "17     4.230000e-17                 1.500000e-18  \n",
+      "19     1.380000e-16                -9.900000e+01  \n",
+      "21     1.990000e-17                 5.000000e-19  \n",
+      "22     2.790000e-17                 7.000000e-19  \n",
+      "23     5.520000e-17                 1.400000e-18  \n"
+     ]
+    }
+   ],
+   "source": [
+    "# define columns\n",
+    "df = pd.DataFrame(output1, columns= ['Star','Disk_has_Rings','Disk_has_spirals','Disk_Asymmetry','Star_system','Spectral_Type','log_tstar','OH_23.2_microns','OH_23.2_microns_uncertainty','OH_27.6_microns','OH_27.6_microns_uncertainty'])\n",
+    "# suppress rows with -99 values\n",
+    "df_loc = df.loc[df['OH_23.2_microns_uncertainty'] != -99]\n",
+    "df_loc.sort_values('OH_23.2_microns',ascending=False)\n",
+    "# show table, print (df_loc)\n",
+    "print(df_loc)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5b902f6b",
+   "metadata": {},
+   "source": [
+    "Conclusion: \n",
+    "- Only 5 sources currently have detectable spirals, OH is detected in 2 of 5. \n",
+    "- Asymmetries are found in 10 disks, 3 out of 6 confirmed OH detections have asymmetry.\n",
+    "- Where there is 23.2 detected, 27.6 is detected as well.\n",
+    "- Triple and Binary systems are not common in our data set (currently 5 out of 31), but at least 3 out of 6 OH detections are from multiple star systems.\n",
+    "- Dataset is too small for definitive conclusions.\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "968b9cc9",
+   "metadata": {},
+   "source": [
+    "# HCN Detections vs. Characteristics"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "id": "b4484320",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "          Star Disk_has_Rings Disk_has_spirals Disk_Asymmetry Star_system  \\\n",
+      "3       RU Lup           TRUE            FALSE          FALSE      Single   \n",
+      "9       AS 205          FALSE             TRUE           TRUE      Triple   \n",
+      "12     DoAr 25           TRUE            FALSE          FALSE      Single   \n",
+      "17     WaOph 6           TRUE             TRUE           TRUE      Single   \n",
+      "18      AS 209           TRUE            FALSE         UNSURE      Single   \n",
+      "20      FZ Tau            -99              -99            -99      Binary   \n",
+      "21      TW Cha            -99              -99            -99      Binary   \n",
+      "22      VZ Cha            -99              -99            -99         NaN   \n",
+      "23      GQ Lup           TRUE            FALSE            -99      Binary   \n",
+      "24  IRAS 04385            -99              -99            -99      Single   \n",
+      "26      CI Tau           TRUE            FALSE         UNSURE         NaN   \n",
+      "28      IQ Tau           TRUE            FALSE           TRUE         NaN   \n",
+      "\n",
+      "   Spectral_Type  log_tstar      HCN_flux  HCN_flux_uncertainty  \n",
+      "3             K7   5.700000  3.690000e-17          3.900000e-18  \n",
+      "9             K5   5.800000  2.200000e-16          1.950000e-17  \n",
+      "12            K5   6.300000  4.880000e-17          1.700000e-18  \n",
+      "17            K6   5.500000  1.710000e-17          2.000000e-18  \n",
+      "18            K5   6.000000  6.800000e-17          1.510000e-17  \n",
+      "20          M0.5 -99.000000  5.690000e-17          8.720000e-18  \n",
+      "21            K7   6.633468  2.270000e-17          6.000000e-19  \n",
+      "22          M0.5   5.900000  3.690000e-17          1.400000e-18  \n",
+      "23          K5.0   6.000000  3.900000e-17          1.600000e-18  \n",
+      "24            M0 -99.000000  2.240000e-17          3.420000e-18  \n",
+      "26          K5.5   6.397940  3.900000e-16          2.950000e-17  \n",
+      "28          M1.1   6.623249  5.700000e-17          3.000000e-18  \n"
+     ]
+    }
+   ],
+   "source": [
+    "# define columns\n",
+    "df = pd.DataFrame(output1, columns= ['Star','Disk_has_Rings','Disk_has_spirals','Disk_Asymmetry','Star_system','Spectral_Type','log_tstar','HCN_flux','HCN_flux_uncertainty'])\n",
+    "# suppress rows with -99 values\n",
+    "df_loc = df.loc[df['HCN_flux_uncertainty'] != -99]\n",
+    "#df_loc.sort_values('OH_23.2_microns',ascending=False)\n",
+    "# show table, print (df_loc)\n",
+    "print(df_loc)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8c4b709d",
+   "metadata": {},
+   "source": [
+    "Conclusion:\n",
+    "- Nothing stands out, except that 4 of our 5 multiple star systems have detectable HCN"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2e121caf",
+   "metadata": {},
+   "source": [
+    "# C2H2 Detections vs. Characteristics"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "id": "764cc62a",
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "          Star Disk_has_Rings Disk_has_spirals Disk_Asymmetry Star_system  \\\n",
+      "9       AS 205          FALSE             TRUE           TRUE      Triple   \n",
+      "12     DoAr 25           TRUE            FALSE          FALSE      Single   \n",
+      "18      AS 209           TRUE            FALSE         UNSURE      Single   \n",
+      "20      FZ Tau            -99              -99            -99      Binary   \n",
+      "21      TW Cha            -99              -99            -99      Binary   \n",
+      "22      VZ Cha            -99              -99            -99         NaN   \n",
+      "24  IRAS 04385            -99              -99            -99      Single   \n",
+      "26      CI Tau           TRUE            FALSE         UNSURE         NaN   \n",
+      "28      IQ Tau           TRUE            FALSE           TRUE         NaN   \n",
+      "\n",
+      "   Spectral_Type  log_tstar     C2H2_flux  C2H2_flux_uncertainty  \n",
+      "9             K5   5.800000  2.110000e-16           1.500000e-17  \n",
+      "12            K5   6.300000  9.900000e-18           1.300000e-18  \n",
+      "18            K5   6.000000  2.790000e-17           6.140000e-18  \n",
+      "20          M0.5 -99.000000  3.530000e-17           8.530000e-18  \n",
+      "21            K7   6.633468  1.360000e-17           5.000000e-19  \n",
+      "22          M0.5   5.900000  4.590000e-17           1.000000e-18  \n",
+      "24            M0 -99.000000  9.450000e-18           2.100000e-18  \n",
+      "26          K5.5   6.397940  2.170000e-17           4.440000e-18  \n",
+      "28          M1.1   6.623249  4.120000e-17           2.300000e-18  \n"
+     ]
+    }
+   ],
+   "source": [
+    "# define columns\n",
+    "df = pd.DataFrame(output1, columns= ['Star','Disk_has_Rings','Disk_has_spirals','Disk_Asymmetry','Star_system','Spectral_Type','log_tstar','C2H2_flux','C2H2_flux_uncertainty'])\n",
+    "# suppress rows with -99 values\n",
+    "df_loc = df.loc[df['C2H2_flux_uncertainty'] != -99]\n",
+    "#df_loc.sort_values('OH_23.2_microns',ascending=False)\n",
+    "# show table, print (df_loc)\n",
+    "print(df_loc)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "138d8643",
+   "metadata": {},
+   "source": [
+    "Conclusion:\n",
+    "- 3 of 5 multiple star systems present \n",
+    "- 4 of 5 disks whose characteristics have not been catalogued present\n",
+    "- Asymmetry is present! In at least 2 of 9, 2 more are unsure, 4 more have not been catalogued"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7f871bb1",
+   "metadata": {},
+   "source": [
+    "# H2O Detections vs. Characteristics"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "47fadf21",
+   "metadata": {},
+   "source": [
+    "H2O 15.17 um"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 27,
+   "id": "d3db0859",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "          Star Disk_has_Rings Disk_has_spirals Disk_Asymmetry Star_system  \\\n",
+      "3       RU Lup           TRUE            FALSE          FALSE      Single   \n",
+      "9       AS 205          FALSE             TRUE           TRUE      Triple   \n",
+      "17     WaOph 6           TRUE             TRUE           TRUE      Single   \n",
+      "20      FZ Tau            -99              -99            -99      Binary   \n",
+      "21      TW Cha            -99              -99            -99      Binary   \n",
+      "22      VZ Cha            -99              -99            -99         NaN   \n",
+      "23      GQ Lup           TRUE            FALSE            -99      Binary   \n",
+      "24  IRAS 04385            -99              -99            -99      Single   \n",
+      "25      GK Tau          FALSE            FALSE           TRUE      Single   \n",
+      "26      CI Tau           TRUE            FALSE         UNSURE         NaN   \n",
+      "28      IQ Tau           TRUE            FALSE           TRUE         NaN   \n",
+      "\n",
+      "   Spectral_Type  log_tstar  H2O_15.17_microns  H2O_15.17_uncertainty  \n",
+      "3             K7   5.700000       2.500000e-17           1.300000e-18  \n",
+      "9             K5   5.800000       1.160000e-16           6.500000e-18  \n",
+      "17            K6   5.500000       1.570000e-17           7.000000e-19  \n",
+      "20          M0.5 -99.000000       4.500000e-17           3.850000e-18  \n",
+      "21            K7   6.633468       6.100000e-18           2.000000e-19  \n",
+      "22          M0.5   5.900000       9.400000e-18           5.000000e-19  \n",
+      "23          K5.0   6.000000       7.100000e-18           6.000000e-19  \n",
+      "24            M0 -99.000000       6.050000e-18           1.650000e-18  \n",
+      "25          K6.5   6.079181       6.790000e-18           1.970000e-18  \n",
+      "26          K5.5   6.397940       1.310000e-17           1.410000e-18  \n",
+      "28          M1.1   6.623249       5.700000e-18           1.000000e-18  \n"
+     ]
+    }
+   ],
+   "source": [
+    "# 3 water wavelengths... do not all correlate to detections like OH. How best to analyze? 1 by 1? Leaning towards... How do I pull stats like\n",
+    "# \"present in all 3\", \"present in 2\"... etc\n",
+    "# What energy levels to these wavelengths correlate to? \n",
+    "\n",
+    "# define columns\n",
+    "df = pd.DataFrame(output1, columns= ['Star','Disk_has_Rings','Disk_has_spirals','Disk_Asymmetry','Star_system','Spectral_Type','log_tstar','H2O_15.17_microns','H2O_15.17_uncertainty'])\n",
+    "# suppress rows with -99 values\n",
+    "df_loc = df.loc[df['H2O_15.17_uncertainty'] != -99]\n",
+    "#df_loc.sort_values('OH_23.2_microns',ascending=False)\n",
+    "# show table, print (df_loc)\n",
+    "print(df_loc)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5cba5840",
+   "metadata": {},
+   "source": [
+    "Conclusion:\n",
+    "- 4 of 5 multi-star systems present\n",
+    "- 4 of 5 \"unobserved\" disks characteristics present\n",
+    "- High percentage of asymmetry, 4 detections out of 11, 1 additional uncertainty, 5 additional unobserved\n",
+    "- 2 of 5 spirals present\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "adb73cbf",
+   "metadata": {},
+   "source": [
+    "H2O 17.22 um"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 34,
+   "id": "f02f8496",
+   "metadata": {
+    "scrolled": false
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "       Star Disk_has_Rings Disk_has_spirals Disk_Asymmetry Star_system  \\\n",
+      "3    RU Lup           TRUE            FALSE          FALSE      Single   \n",
+      "9    AS 205          FALSE             TRUE           TRUE      Triple   \n",
+      "17  WaOph 6           TRUE             TRUE           TRUE      Single   \n",
+      "20   FZ Tau            -99              -99            -99      Binary   \n",
+      "21   TW Cha            -99              -99            -99      Binary   \n",
+      "22   VZ Cha            -99              -99            -99         NaN   \n",
+      "23   GQ Lup           TRUE            FALSE            -99      Binary   \n",
+      "26   CI Tau           TRUE            FALSE         UNSURE         NaN   \n",
+      "28   IQ Tau           TRUE            FALSE           TRUE         NaN   \n",
+      "\n",
+      "   Spectral_Type  log_tstar  H2O_17.22_microns  H2O_17.22_uncertainty  \n",
+      "3             K7   5.700000       3.490000e-17           1.400000e-18  \n",
+      "9             K5   5.800000       1.820000e-16           7.400000e-18  \n",
+      "17            K6   5.500000       1.540000e-17           7.000000e-19  \n",
+      "20          M0.5 -99.000000       6.580000e-17           2.220000e-18  \n",
+      "21            K7   6.633468       1.040000e-17           3.000000e-19  \n",
+      "22          M0.5   5.900000       1.390000e-17           5.000000e-19  \n",
+      "23          K5.0   6.000000       1.390000e-17           6.000000e-19  \n",
+      "26          K5.5   6.397940       1.010000e-17           2.870000e-18  \n",
+      "28          M1.1   6.623249       9.000000e-18           9.000000e-19  \n"
+     ]
+    }
+   ],
+   "source": [
+    "# define columns\n",
+    "df = pd.DataFrame(output1, columns= ['Star','Disk_has_Rings','Disk_has_spirals','Disk_Asymmetry','Star_system','Spectral_Type','log_tstar','H2O_17.22_microns','H2O_17.22_uncertainty'])\n",
+    "# suppress rows with -99 values\n",
+    "df_loc = df.loc[df['H2O_17.22_uncertainty'] != -99]\n",
+    "#df_loc.sort_values('OH_23.2_microns',ascending=False)\n",
+    "# show table, print (df_loc)\n",
+    "print(df_loc)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b8a4a057",
+   "metadata": {},
+   "source": [
+    "Conclusions:\n",
+    "- 4 of 5 multi-star systems present \n",
+    "- High correlation of Rings (6 of 9, 3 without data), Spirals (2 of 5 total detections), Asymmetry (3-4 of 9, 4 unobserved)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "14fdf8c3",
+   "metadata": {},
+   "source": [
+    "H2O 29.85 um (Outside bandpass of MIRI)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 35,
+   "id": "921cbeab",
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "          Star Disk_has_Rings Disk_has_spirals Disk_Asymmetry Star_system  \\\n",
+      "0       HT Lup          FALSE             TRUE          FALSE      Triple   \n",
+      "3       RU Lup           TRUE            FALSE          FALSE      Single   \n",
+      "9       AS 205          FALSE             TRUE           TRUE      Triple   \n",
+      "17     WaOph 6           TRUE             TRUE           TRUE      Single   \n",
+      "18      AS 209           TRUE            FALSE         UNSURE      Single   \n",
+      "20      FZ Tau            -99              -99            -99      Binary   \n",
+      "21      TW Cha            -99              -99            -99      Binary   \n",
+      "22      VZ Cha            -99              -99            -99         NaN   \n",
+      "23      GQ Lup           TRUE            FALSE            -99      Binary   \n",
+      "24  IRAS 04385            -99              -99            -99      Single   \n",
+      "25      GK Tau          FALSE            FALSE           TRUE      Single   \n",
+      "\n",
+      "   Spectral_Type  log_tstar  H2O_29.85_microns  H2O_29.85_uncertainty  \n",
+      "0             K2   5.900000       1.170000e-14           1.500000e-18  \n",
+      "3             K7   5.700000       2.410000e-17           8.000000e-19  \n",
+      "9             K5   5.800000       9.350000e-17           4.800000e-18  \n",
+      "17            K6   5.500000       1.060000e-17           5.000000e-19  \n",
+      "18            K5   6.000000       1.940000e-17           3.730000e-18  \n",
+      "20          M0.5 -99.000000       3.470000e-17           6.820000e-18  \n",
+      "21            K7   6.633468       5.500000e-18           2.000000e-19  \n",
+      "22          M0.5   5.900000       7.500000e-18           2.000000e-19  \n",
+      "23          K5.0   6.000000       1.330000e-17           4.000000e-19  \n",
+      "24            M0 -99.000000       2.890000e-17           8.850000e-18  \n",
+      "25          K6.5   6.079181       2.740000e-17           6.660000e-18  \n"
+     ]
+    }
+   ],
+   "source": [
+    "# define columns\n",
+    "df = pd.DataFrame(output1, columns= ['Star','Disk_has_Rings','Disk_has_spirals','Disk_Asymmetry','Star_system','Spectral_Type','log_tstar','H2O_29.85_microns','H2O_29.85_uncertainty'])\n",
+    "# suppress rows with -99 values\n",
+    "df_loc = df.loc[df['H2O_29.85_uncertainty'] != -99]\n",
+    "#df_loc.sort_values('OH_23.2_microns',ascending=False)\n",
+    "# show table, print (df_loc)\n",
+    "print(df_loc)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "34ecae0e",
+   "metadata": {},
+   "source": [
+    "Conclusions:\n",
+    "- All 5 multi-star systems present, 5 of 11 total where H2O 29.85 is detected"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1a2ce726",
+   "metadata": {},
+   "source": [
+    "# CO2 Detections vs. Characteristics"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 36,
+   "id": "e1a5550a",
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "          Star Disk_has_Rings Disk_has_spirals Disk_Asymmetry Star_system  \\\n",
+      "0       HT Lup          FALSE             TRUE          FALSE      Triple   \n",
+      "1       GW Lup           TRUE            FALSE          FALSE      Single   \n",
+      "2       IM Lup           TRUE             TRUE         UNSURE      Single   \n",
+      "3       RU Lup           TRUE            FALSE          FALSE      Single   \n",
+      "9       AS 205          FALSE             TRUE           TRUE      Triple   \n",
+      "17     WaOph 6           TRUE             TRUE           TRUE      Single   \n",
+      "18      AS 209           TRUE            FALSE         UNSURE      Single   \n",
+      "20      FZ Tau            -99              -99            -99      Binary   \n",
+      "24  IRAS 04385            -99              -99            -99      Single   \n",
+      "26      CI Tau           TRUE            FALSE         UNSURE         NaN   \n",
+      "\n",
+      "   Spectral_Type  log_tstar      CO2_flux  CO2_flux_uncertainty  \n",
+      "0             K2    5.90000  5.580000e-17          1.080000e-17  \n",
+      "1           M1.5    6.30000  2.080000e-17          1.300000e-18  \n",
+      "2             K5    5.70000  8.600000e-18          1.500000e-18  \n",
+      "3             K7    5.70000  1.410000e-17          3.100000e-18  \n",
+      "9             K5    5.80000  2.330000e-16          1.600000e-17  \n",
+      "17            K6    5.50000  2.560000e-17          1.700000e-18  \n",
+      "18            K5    6.00000  1.810000e-16          5.180000e-17  \n",
+      "20          M0.5  -99.00000  2.590000e-16          4.590000e-17  \n",
+      "24            M0  -99.00000  3.260000e-17          7.610000e-18  \n",
+      "26          K5.5    6.39794  5.860000e-18          1.090000e-18  \n"
+     ]
+    }
+   ],
+   "source": [
+    "# define columns\n",
+    "df = pd.DataFrame(output1, columns= ['Star','Disk_has_Rings','Disk_has_spirals','Disk_Asymmetry','Star_system','Spectral_Type','log_tstar','CO2_flux','CO2_flux_uncertainty'])\n",
+    "# suppress rows with -99 values\n",
+    "df_loc = df.loc[df['CO2_flux_uncertainty'] != -99]\n",
+    "#df_loc.sort_values('OH_23.2_microns',ascending=False)\n",
+    "# show table, print (df_loc)\n",
+    "print(df_loc)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "824bc8b6",
+   "metadata": {},
+   "source": [
+    "CO2 Conclusions:\n",
+    "- 3 of 5 multi-star systems present\n",
+    "- 4 0f 5 spirals present\n",
+    "- High presence of asymmetry: 2 of 10 detections, 3 additional uncertain\n",
+    "- High presence of rings: 6 of 10 detections, 2 falses, 2 unobserved"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d0349364",
+   "metadata": {},
+   "source": [
+    "# NeII Detections vs. Characteristics"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 38,
+   "id": "17e457bc",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "          Star Disk_has_Rings Disk_has_spirals Disk_Asymmetry Star_system  \\\n",
+      "2       IM Lup           TRUE             TRUE         UNSURE      Single   \n",
+      "4       Sz 114           TRUE            FALSE         UNSURE      Single   \n",
+      "5       Sz 129           TRUE            FALSE           TRUE      Single   \n",
+      "6       MY Lup           TRUE            FALSE         UNSURE      Single   \n",
+      "7    HD 142666           TRUE            FALSE           TRUE      Single   \n",
+      "8    HD 143006           TRUE            FALSE           TRUE      Single   \n",
+      "10        SR 4           TRUE            FALSE           TRUE      Single   \n",
+      "11    Elias 20           TRUE            FALSE          FALSE      Single   \n",
+      "12     DoAr 25           TRUE            FALSE          FALSE      Single   \n",
+      "13    Elias 24           TRUE            FALSE          FALSE      Single   \n",
+      "14    Elias 27           TRUE             TRUE         UNSURE      Single   \n",
+      "15     DoAr 33           TRUE            FALSE          FALSE      Single   \n",
+      "16      WSB 52           TRUE            FALSE          FALSE      Single   \n",
+      "24  IRAS 04385            -99              -99            -99      Single   \n",
+      "25      GK Tau          FALSE            FALSE           TRUE      Single   \n",
+      "26      CI Tau           TRUE            FALSE         UNSURE         NaN   \n",
+      "29      HP Tau          FALSE            FALSE          FALSE      Single   \n",
+      "30      GO Tau           TRUE            FALSE           TRUE         NaN   \n",
+      "\n",
+      "   Spectral_Type  log_tstar  NeII_12.8_flux  NeII_12.8_flux_uncertainty  \n",
+      "2             K5   5.700000    6.100000e-17                1.600000e-17  \n",
+      "4             M5   6.000000             NaN                         NaN  \n",
+      "5             K7   6.600000             NaN                         NaN  \n",
+      "6             K0   7.000000             NaN                         NaN  \n",
+      "7             A8   7.100000             NaN                         NaN  \n",
+      "8             G7   6.600000             NaN                         NaN  \n",
+      "10            K7   5.900000             NaN                         NaN  \n",
+      "11            M0   5.900000             NaN                         NaN  \n",
+      "12            K5   6.300000             NaN                         NaN  \n",
+      "13            K5   5.300000             NaN                         NaN  \n",
+      "14            M0   5.900000             NaN                         NaN  \n",
+      "15            K4   6.200000             NaN                         NaN  \n",
+      "16            M1   5.800000             NaN                         NaN  \n",
+      "24            M0 -99.000000    1.040000e-17                2.470000e-19  \n",
+      "25          K6.5   6.079181    6.010000e-18                1.310000e-18  \n",
+      "26          K5.5   6.397940    6.530000e-18                6.560000e-19  \n",
+      "29            K4   6.380211             NaN                         NaN  \n",
+      "30          M2.3   6.342423             NaN                         NaN  \n",
+      "Total sources = 18\n"
+     ]
+    }
+   ],
+   "source": [
+    "# define columns\n",
+    "df = pd.DataFrame(output1, columns= ['Star','Disk_has_Rings','Disk_has_spirals','Disk_Asymmetry','Star_system','Spectral_Type','log_tstar','NeII_12.8_flux','NeII_12.8_flux_uncertainty'])\n",
+    "# suppress rows with -99 values\n",
+    "df_loc = df.loc[df['NeII_12.8_flux_uncertainty'] != -99]\n",
+    "#df_loc.sort_values('OH_23.2_microns',ascending=False)\n",
+    "# show table, print (df_loc)\n",
+    "print(df_loc)\n",
+    "\n",
+    "print('Total sources = '+str(df_loc['Star'].count()))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "23f06d01",
+   "metadata": {},
+   "source": [
+    "Ne II Conclusions:\n",
+    "- Fix -99 values\n",
+    "- Present in 4 disks, all single-star systems\n",
+    "- Asymmetry present in at least 1 (2 additional uncertain, 1 unobserved)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "07ed5ba3",
+   "metadata": {},
+   "source": [
+    "# Chemistry richness\n",
+    "Which disks have multiple detections? What makes them special? Very bright? Any disk characteristics? Ie, AS 205, TW Cha, VZ Cha, WaOph 6"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 40,
+   "id": "05db21ed",
+   "metadata": {},
+   "outputs": [
+    {
+     "ename": "KeyError",
+     "evalue": "('CO2_flux_uncertainty', 'H2O_29.85_uncertainty')",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[1;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[1;31mKeyError\u001b[0m                                  Traceback (most recent call last)",
+      "File \u001b[1;32m~\\Anaconda3\\lib\\site-packages\\pandas\\core\\indexes\\base.py:3621\u001b[0m, in \u001b[0;36mIndex.get_loc\u001b[1;34m(self, key, method, tolerance)\u001b[0m\n\u001b[0;32m   3620\u001b[0m \u001b[38;5;28;01mtry\u001b[39;00m:\n\u001b[1;32m-> 3621\u001b[0m     \u001b[38;5;28;01mreturn\u001b[39;00m \u001b[38;5;28;43mself\u001b[39;49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43m_engine\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mget_loc\u001b[49m\u001b[43m(\u001b[49m\u001b[43mcasted_key\u001b[49m\u001b[43m)\u001b[49m\n\u001b[0;32m   3622\u001b[0m \u001b[38;5;28;01mexcept\u001b[39;00m \u001b[38;5;167;01mKeyError\u001b[39;00m \u001b[38;5;28;01mas\u001b[39;00m err:\n",
+      "File \u001b[1;32m~\\Anaconda3\\lib\\site-packages\\pandas\\_libs\\index.pyx:136\u001b[0m, in \u001b[0;36mpandas._libs.index.IndexEngine.get_loc\u001b[1;34m()\u001b[0m\n",
+      "File \u001b[1;32m~\\Anaconda3\\lib\\site-packages\\pandas\\_libs\\index.pyx:163\u001b[0m, in \u001b[0;36mpandas._libs.index.IndexEngine.get_loc\u001b[1;34m()\u001b[0m\n",
+      "File \u001b[1;32mpandas\\_libs\\hashtable_class_helper.pxi:5198\u001b[0m, in \u001b[0;36mpandas._libs.hashtable.PyObjectHashTable.get_item\u001b[1;34m()\u001b[0m\n",
+      "File \u001b[1;32mpandas\\_libs\\hashtable_class_helper.pxi:5206\u001b[0m, in \u001b[0;36mpandas._libs.hashtable.PyObjectHashTable.get_item\u001b[1;34m()\u001b[0m\n",
+      "\u001b[1;31mKeyError\u001b[0m: ('CO2_flux_uncertainty', 'H2O_29.85_uncertainty')",
+      "\nThe above exception was the direct cause of the following exception:\n",
+      "\u001b[1;31mKeyError\u001b[0m                                  Traceback (most recent call last)",
+      "Input \u001b[1;32mIn [40]\u001b[0m, in \u001b[0;36m<cell line: 14>\u001b[1;34m()\u001b[0m\n\u001b[0;32m      2\u001b[0m df \u001b[38;5;241m=\u001b[39m pd\u001b[38;5;241m.\u001b[39mDataFrame(output1, columns\u001b[38;5;241m=\u001b[39m [\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mStar\u001b[39m\u001b[38;5;124m'\u001b[39m,\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mDisk_has_Rings\u001b[39m\u001b[38;5;124m'\u001b[39m,\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mDisk_has_spirals\u001b[39m\u001b[38;5;124m'\u001b[39m,\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mDisk_Asymmetry\u001b[39m\u001b[38;5;124m'\u001b[39m,\n\u001b[0;32m      3\u001b[0m                                      \u001b[38;5;124m'\u001b[39m\u001b[38;5;124mStar_system\u001b[39m\u001b[38;5;124m'\u001b[39m,\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mSpectral_Type\u001b[39m\u001b[38;5;124m'\u001b[39m,\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mlog_tstar\u001b[39m\u001b[38;5;124m'\u001b[39m,\n\u001b[0;32m      4\u001b[0m                                      \u001b[38;5;124m'\u001b[39m\u001b[38;5;124mOH_23.2_microns\u001b[39m\u001b[38;5;124m'\u001b[39m,\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mOH_23.2_microns_uncertainty\u001b[39m\u001b[38;5;124m'\u001b[39m,\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mOH_27.6_microns\u001b[39m\u001b[38;5;124m'\u001b[39m,\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mOH_27.6_microns_uncertainty\u001b[39m\u001b[38;5;124m'\u001b[39m,\n\u001b[1;32m   (...)\u001b[0m\n\u001b[0;32m     11\u001b[0m                                     \u001b[38;5;124m'\u001b[39m\u001b[38;5;124mNeII_12.8_flux\u001b[39m\u001b[38;5;124m'\u001b[39m,\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mNeII_12.8_flux_uncertainty\u001b[39m\u001b[38;5;124m'\u001b[39m\n\u001b[0;32m     12\u001b[0m                                     ])\n\u001b[0;32m     13\u001b[0m \u001b[38;5;66;03m# suppress rows with -99 values\u001b[39;00m\n\u001b[1;32m---> 14\u001b[0m df_loc \u001b[38;5;241m=\u001b[39m df\u001b[38;5;241m.\u001b[39mloc[\u001b[43mdf\u001b[49m\u001b[43m[\u001b[49m\u001b[38;5;124;43m'\u001b[39;49m\u001b[38;5;124;43mCO2_flux_uncertainty\u001b[39;49m\u001b[38;5;124;43m'\u001b[39;49m\u001b[43m,\u001b[49m\u001b[38;5;124;43m'\u001b[39;49m\u001b[38;5;124;43mH2O_29.85_uncertainty\u001b[39;49m\u001b[38;5;124;43m'\u001b[39;49m\u001b[43m]\u001b[49m \u001b[38;5;241m!=\u001b[39m \u001b[38;5;241m-\u001b[39m\u001b[38;5;241m99\u001b[39m]\n\u001b[0;32m     15\u001b[0m \u001b[38;5;66;03m#df_loc.sort_values('OH_23.2_microns',ascending=False)\u001b[39;00m\n\u001b[0;32m     16\u001b[0m \u001b[38;5;66;03m# show table, print (df_loc)\u001b[39;00m\n\u001b[0;32m     17\u001b[0m \u001b[38;5;28mprint\u001b[39m(df_loc)\n",
+      "File \u001b[1;32m~\\Anaconda3\\lib\\site-packages\\pandas\\core\\frame.py:3505\u001b[0m, in \u001b[0;36mDataFrame.__getitem__\u001b[1;34m(self, key)\u001b[0m\n\u001b[0;32m   3503\u001b[0m \u001b[38;5;28;01mif\u001b[39;00m \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39mcolumns\u001b[38;5;241m.\u001b[39mnlevels \u001b[38;5;241m>\u001b[39m \u001b[38;5;241m1\u001b[39m:\n\u001b[0;32m   3504\u001b[0m     \u001b[38;5;28;01mreturn\u001b[39;00m \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_getitem_multilevel(key)\n\u001b[1;32m-> 3505\u001b[0m indexer \u001b[38;5;241m=\u001b[39m \u001b[38;5;28;43mself\u001b[39;49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mcolumns\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mget_loc\u001b[49m\u001b[43m(\u001b[49m\u001b[43mkey\u001b[49m\u001b[43m)\u001b[49m\n\u001b[0;32m   3506\u001b[0m \u001b[38;5;28;01mif\u001b[39;00m is_integer(indexer):\n\u001b[0;32m   3507\u001b[0m     indexer \u001b[38;5;241m=\u001b[39m [indexer]\n",
+      "File \u001b[1;32m~\\Anaconda3\\lib\\site-packages\\pandas\\core\\indexes\\base.py:3623\u001b[0m, in \u001b[0;36mIndex.get_loc\u001b[1;34m(self, key, method, tolerance)\u001b[0m\n\u001b[0;32m   3621\u001b[0m     \u001b[38;5;28;01mreturn\u001b[39;00m \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_engine\u001b[38;5;241m.\u001b[39mget_loc(casted_key)\n\u001b[0;32m   3622\u001b[0m \u001b[38;5;28;01mexcept\u001b[39;00m \u001b[38;5;167;01mKeyError\u001b[39;00m \u001b[38;5;28;01mas\u001b[39;00m err:\n\u001b[1;32m-> 3623\u001b[0m     \u001b[38;5;28;01mraise\u001b[39;00m \u001b[38;5;167;01mKeyError\u001b[39;00m(key) \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01merr\u001b[39;00m\n\u001b[0;32m   3624\u001b[0m \u001b[38;5;28;01mexcept\u001b[39;00m \u001b[38;5;167;01mTypeError\u001b[39;00m:\n\u001b[0;32m   3625\u001b[0m     \u001b[38;5;66;03m# If we have a listlike key, _check_indexing_error will raise\u001b[39;00m\n\u001b[0;32m   3626\u001b[0m     \u001b[38;5;66;03m#  InvalidIndexError. Otherwise we fall through and re-raise\u001b[39;00m\n\u001b[0;32m   3627\u001b[0m     \u001b[38;5;66;03m#  the TypeError.\u001b[39;00m\n\u001b[0;32m   3628\u001b[0m     \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_check_indexing_error(key)\n",
+      "\u001b[1;31mKeyError\u001b[0m: ('CO2_flux_uncertainty', 'H2O_29.85_uncertainty')"
+     ]
+    }
+   ],
+   "source": [
+    "# define columns\n",
+    "df = pd.DataFrame(output1, columns= ['Star','Disk_has_Rings','Disk_has_spirals','Disk_Asymmetry',\n",
+    "                                     'Star_system','Spectral_Type','log_tstar',\n",
+    "                                     'OH_23.2_microns','OH_23.2_microns_uncertainty','OH_27.6_microns','OH_27.6_microns_uncertainty',\n",
+    "                                     'HCN_flux','HCN_flux_uncertainty',\n",
+    "                                     'C2H2_flux','C2H2_flux_uncertainty',\n",
+    "                                     'H2O_15.17_microns','H2O_15.17_uncertainty',\n",
+    "                                     'H2O_17.22_microns','H2O_17.22_uncertainty',\n",
+    "                                     'H2O_29.85_microns','H2O_29.85_uncertainty',\n",
+    "                                     'CO2_flux','CO2_flux_uncertainty',\n",
+    "                                    'NeII_12.8_flux','NeII_12.8_flux_uncertainty'\n",
+    "                                    ])\n",
+    "# suppress rows with -99 values\n",
+    "df_loc = df.loc[df['CO2_flux_uncertainty'] != -99]\n",
+    "#df_loc.sort_values('OH_23.2_microns',ascending=False)\n",
+    "# show table, print (df_loc)\n",
+    "print(df_loc)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "b79a5766",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
