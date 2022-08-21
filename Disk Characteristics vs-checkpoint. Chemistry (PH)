@@ -2,7 +2,7 @@
  "cells": [
   {
    "cell_type": "markdown",
-   "id": "0af24ad9",
+   "id": "dec642d3",
    "metadata": {},
    "source": [
     "# Disk Characteristics vs. Chemistry\n",
@@ -16,22 +16,163 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
-   "id": "7fdda220",
+   "execution_count": 1,
+   "id": "95c79123",
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Requirement already satisfied: pandas-profiling[notebook] in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (3.2.0)\n",
+      "Requirement already satisfied: scipy>=1.4.1 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from pandas-profiling[notebook]) (1.7.3)\n",
+      "Requirement already satisfied: numpy>=1.16.0 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from pandas-profiling[notebook]) (1.21.5)\n",
+      "Requirement already satisfied: phik>=0.11.1 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from pandas-profiling[notebook]) (0.12.2)\n",
+      "Requirement already satisfied: seaborn>=0.10.1 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from pandas-profiling[notebook]) (0.11.2)\n",
+      "Requirement already satisfied: requests>=2.24.0 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from pandas-profiling[notebook]) (2.27.1)\n",
+      "Requirement already satisfied: pandas!=1.0.0,!=1.0.1,!=1.0.2,!=1.1.0,>=0.25.3 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from pandas-profiling[notebook]) (1.4.2)\n",
+      "Requirement already satisfied: multimethod>=1.4 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from pandas-profiling[notebook]) (1.8)\n",
+      "Requirement already satisfied: pydantic>=1.8.1 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from pandas-profiling[notebook]) (1.9.1)\n",
+      "Requirement already satisfied: visions[type_image_path]==0.7.4 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from pandas-profiling[notebook]) (0.7.4)\n",
+      "Requirement already satisfied: missingno>=0.4.2 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from pandas-profiling[notebook]) (0.5.1)\n",
+      "Requirement already satisfied: markupsafe~=2.1.1 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from pandas-profiling[notebook]) (2.1.1)\n",
+      "Requirement already satisfied: joblib~=1.1.0 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from pandas-profiling[notebook]) (1.1.0)\n",
+      "Requirement already satisfied: tangled-up-in-unicode==0.2.0 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from pandas-profiling[notebook]) (0.2.0)\n",
+      "Requirement already satisfied: jinja2>=2.11.1 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from pandas-profiling[notebook]) (2.11.3)\n",
+      "Requirement already satisfied: matplotlib>=3.2.0 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from pandas-profiling[notebook]) (3.5.1)\n",
+      "Requirement already satisfied: PyYAML>=5.0.0 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from pandas-profiling[notebook]) (6.0)\n",
+      "Requirement already satisfied: tqdm>=4.48.2 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from pandas-profiling[notebook]) (4.64.0)\n",
+      "Requirement already satisfied: htmlmin>=0.1.12 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from pandas-profiling[notebook]) (0.1.12)\n",
+      "Requirement already satisfied: jupyter-core>=4.6.3 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from pandas-profiling[notebook]) (4.9.2)\n",
+      "Requirement already satisfied: ipywidgets>=7.5.1 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from pandas-profiling[notebook]) (7.6.5)\n",
+      "Requirement already satisfied: jupyter-client>=5.3.4 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from pandas-profiling[notebook]) (6.1.12)\n",
+      "Requirement already satisfied: networkx>=2.4 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from visions[type_image_path]==0.7.4->pandas-profiling[notebook]) (2.7.1)\n",
+      "Requirement already satisfied: attrs>=19.3.0 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from visions[type_image_path]==0.7.4->pandas-profiling[notebook]) (21.4.0)\n",
+      "Requirement already satisfied: Pillow in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from visions[type_image_path]==0.7.4->pandas-profiling[notebook]) (9.0.1)\n",
+      "Requirement already satisfied: imagehash in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from visions[type_image_path]==0.7.4->pandas-profiling[notebook]) (4.2.1)\n",
+      "Requirement already satisfied: jupyterlab-widgets>=1.0.0 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from ipywidgets>=7.5.1->pandas-profiling[notebook]) (1.0.0)\n",
+      "Requirement already satisfied: ipython>=4.0.0 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from ipywidgets>=7.5.1->pandas-profiling[notebook]) (8.2.0)\n",
+      "Requirement already satisfied: ipython-genutils~=0.2.0 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from ipywidgets>=7.5.1->pandas-profiling[notebook]) (0.2.0)\n",
+      "Requirement already satisfied: widgetsnbextension~=3.5.0 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from ipywidgets>=7.5.1->pandas-profiling[notebook]) (3.5.2)\n",
+      "Requirement already satisfied: nbformat>=4.2.0 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from ipywidgets>=7.5.1->pandas-profiling[notebook]) (5.3.0)\n",
+      "Requirement already satisfied: traitlets>=4.3.1 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from ipywidgets>=7.5.1->pandas-profiling[notebook]) (5.1.1)\n",
+      "Requirement already satisfied: ipykernel>=4.5.1 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from ipywidgets>=7.5.1->pandas-profiling[notebook]) (6.9.1)\n",
+      "Requirement already satisfied: debugpy<2.0,>=1.0.0 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from ipykernel>=4.5.1->ipywidgets>=7.5.1->pandas-profiling[notebook]) (1.5.1)\n",
+      "Requirement already satisfied: nest-asyncio in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from ipykernel>=4.5.1->ipywidgets>=7.5.1->pandas-profiling[notebook]) (1.5.5)\n",
+      "Requirement already satisfied: matplotlib-inline<0.2.0,>=0.1.0 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from ipykernel>=4.5.1->ipywidgets>=7.5.1->pandas-profiling[notebook]) (0.1.2)\n",
+      "Requirement already satisfied: tornado<7.0,>=4.2 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from ipykernel>=4.5.1->ipywidgets>=7.5.1->pandas-profiling[notebook]) (6.1)\n",
+      "Requirement already satisfied: pygments>=2.4.0 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from ipython>=4.0.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (2.11.2)\n",
+      "Requirement already satisfied: jedi>=0.16 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from ipython>=4.0.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (0.18.1)\n",
+      "Requirement already satisfied: prompt-toolkit!=3.0.0,!=3.0.1,<3.1.0,>=2.0.0 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from ipython>=4.0.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (3.0.20)\n",
+      "Requirement already satisfied: backcall in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from ipython>=4.0.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (0.2.0)\n",
+      "Requirement already satisfied: stack-data in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from ipython>=4.0.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (0.2.0)\n",
+      "Requirement already satisfied: setuptools>=18.5 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from ipython>=4.0.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (61.2.0)\n",
+      "Requirement already satisfied: pickleshare in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from ipython>=4.0.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (0.7.5)\n",
+      "Requirement already satisfied: colorama in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from ipython>=4.0.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (0.4.4)\n",
+      "Requirement already satisfied: decorator in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from ipython>=4.0.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (5.1.1)\n",
+      "Requirement already satisfied: parso<0.9.0,>=0.8.0 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from jedi>=0.16->ipython>=4.0.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (0.8.3)\n",
+      "Requirement already satisfied: pyzmq>=13 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from jupyter-client>=5.3.4->pandas-profiling[notebook]) (22.3.0)\n",
+      "Requirement already satisfied: python-dateutil>=2.1 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from jupyter-client>=5.3.4->pandas-profiling[notebook]) (2.8.2)\n",
+      "Requirement already satisfied: pywin32>=1.0 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from jupyter-core>=4.6.3->pandas-profiling[notebook]) (302)\n",
+      "Requirement already satisfied: cycler>=0.10 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from matplotlib>=3.2.0->pandas-profiling[notebook]) (0.11.0)\n",
+      "Requirement already satisfied: fonttools>=4.22.0 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from matplotlib>=3.2.0->pandas-profiling[notebook]) (4.25.0)\n",
+      "Requirement already satisfied: kiwisolver>=1.0.1 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from matplotlib>=3.2.0->pandas-profiling[notebook]) (1.3.2)\n",
+      "Requirement already satisfied: packaging>=20.0 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from matplotlib>=3.2.0->pandas-profiling[notebook]) (21.3)\n",
+      "Requirement already satisfied: pyparsing>=2.2.1 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from matplotlib>=3.2.0->pandas-profiling[notebook]) (3.0.4)\n",
+      "Requirement already satisfied: jsonschema>=2.6 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from nbformat>=4.2.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (4.4.0)\n",
+      "Requirement already satisfied: fastjsonschema in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from nbformat>=4.2.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (2.15.1)\n",
+      "Requirement already satisfied: pyrsistent!=0.17.0,!=0.17.1,!=0.17.2,>=0.14.0 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from jsonschema>=2.6->nbformat>=4.2.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (0.18.0)\n",
+      "Requirement already satisfied: pytz>=2020.1 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from pandas!=1.0.0,!=1.0.1,!=1.0.2,!=1.1.0,>=0.25.3->pandas-profiling[notebook]) (2021.3)\n",
+      "Requirement already satisfied: wcwidth in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from prompt-toolkit!=3.0.0,!=3.0.1,<3.1.0,>=2.0.0->ipython>=4.0.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (0.2.5)\n",
+      "Requirement already satisfied: typing-extensions>=3.7.4.3 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from pydantic>=1.8.1->pandas-profiling[notebook]) (4.1.1)\n",
+      "Requirement already satisfied: six>=1.5 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from python-dateutil>=2.1->jupyter-client>=5.3.4->pandas-profiling[notebook]) (1.16.0)\n",
+      "Requirement already satisfied: charset-normalizer~=2.0.0 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from requests>=2.24.0->pandas-profiling[notebook]) (2.0.4)\n",
+      "Requirement already satisfied: certifi>=2017.4.17 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from requests>=2.24.0->pandas-profiling[notebook]) (2021.10.8)\n",
+      "Requirement already satisfied: idna<4,>=2.5 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from requests>=2.24.0->pandas-profiling[notebook]) (3.3)\n",
+      "Requirement already satisfied: urllib3<1.27,>=1.21.1 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from requests>=2.24.0->pandas-profiling[notebook]) (1.26.9)\n",
+      "Requirement already satisfied: notebook>=4.4.1 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from widgetsnbextension~=3.5.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (6.4.8)\n",
+      "Requirement already satisfied: nbconvert in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (6.4.4)\n",
+      "Requirement already satisfied: Send2Trash>=1.8.0 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (1.8.0)\n",
+      "Requirement already satisfied: terminado>=0.8.3 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (0.13.1)\n",
+      "Requirement already satisfied: argon2-cffi in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (21.3.0)\n",
+      "Requirement already satisfied: prometheus-client in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (0.13.1)\n",
+      "Requirement already satisfied: pywinpty>=1.1.0 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from terminado>=0.8.3->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (2.0.2)\n",
+      "Requirement already satisfied: argon2-cffi-bindings in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from argon2-cffi->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (21.2.0)\n",
+      "Requirement already satisfied: cffi>=1.0.1 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from argon2-cffi-bindings->argon2-cffi->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (1.15.0)\n",
+      "Requirement already satisfied: pycparser in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from cffi>=1.0.1->argon2-cffi-bindings->argon2-cffi->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (2.21)\n",
+      "Requirement already satisfied: PyWavelets in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from imagehash->visions[type_image_path]==0.7.4->pandas-profiling[notebook]) (1.3.0)\n",
+      "Requirement already satisfied: nbclient<0.6.0,>=0.5.0 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (0.5.13)\n",
+      "Requirement already satisfied: pandocfilters>=1.4.1 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (1.5.0)\n",
+      "Requirement already satisfied: entrypoints>=0.2.2 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (0.4)\n",
+      "Requirement already satisfied: testpath in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (0.5.0)\n",
+      "Requirement already satisfied: bleach in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (4.1.0)\n",
+      "Requirement already satisfied: beautifulsoup4 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (4.11.1)\n",
+      "Requirement already satisfied: mistune<2,>=0.8.1 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (0.8.4)\n",
+      "Requirement already satisfied: jupyterlab-pygments in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (0.1.2)\n",
+      "Requirement already satisfied: defusedxml in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (0.7.1)\n",
+      "Requirement already satisfied: soupsieve>1.2 in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from beautifulsoup4->nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (2.3.1)\n",
+      "Requirement already satisfied: webencodings in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from bleach->nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (0.5.1)\n",
+      "Requirement already satisfied: pure-eval in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from stack-data->ipython>=4.0.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (0.2.2)\n",
+      "Requirement already satisfied: asttokens in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from stack-data->ipython>=4.0.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (2.0.5)\n",
+      "Requirement already satisfied: executing in c:\\users\\pheretz\\anaconda3\\lib\\site-packages (from stack-data->ipython>=4.0.0->ipywidgets>=7.5.1->pandas-profiling[notebook]) (0.8.3)\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "Enabling notebook extension jupyter-js-widgets/extension...\n",
+      "      - Validating: ok\n"
+     ]
+    }
+   ],
+   "source": [
+    "import sys\n",
+    "!{sys.executable} -m pip install -U pandas-profiling[notebook]\n",
+    "!jupyter nbextension enable --py widgetsnbextension"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "a3bab9ee",
+   "metadata": {},
+   "outputs": [
+    {
+     "ename": "ImportError",
+     "evalue": "cannot import name 'soft_unicode' from 'markupsafe' (C:\\Users\\pheretz\\Anaconda3\\lib\\site-packages\\markupsafe\\__init__.py)",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[1;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[1;31mImportError\u001b[0m                               Traceback (most recent call last)",
+      "Input \u001b[1;32mIn [2]\u001b[0m, in \u001b[0;36m<cell line: 6>\u001b[1;34m()\u001b[0m\n\u001b[0;32m      4\u001b[0m \u001b[38;5;28;01mimport\u001b[39;00m \u001b[38;5;21;01mmatplotlib\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mpyplot\u001b[39;00m \u001b[38;5;28;01mas\u001b[39;00m \u001b[38;5;21;01mplt\u001b[39;00m\n\u001b[0;32m      5\u001b[0m \u001b[38;5;28;01mimport\u001b[39;00m \u001b[38;5;21;01mnumpy\u001b[39;00m \u001b[38;5;28;01mas\u001b[39;00m \u001b[38;5;21;01mnp\u001b[39;00m\n\u001b[1;32m----> 6\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01mpandas_profiling\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m ProfileReport\n",
+      "File \u001b[1;32m~\\Anaconda3\\lib\\site-packages\\pandas_profiling\\__init__.py:6\u001b[0m, in \u001b[0;36m<module>\u001b[1;34m\u001b[0m\n\u001b[0;32m      1\u001b[0m \u001b[38;5;124;03m\"\"\"Main module of pandas-profiling.\u001b[39;00m\n\u001b[0;32m      2\u001b[0m \n\u001b[0;32m      3\u001b[0m \u001b[38;5;124;03m.. include:: ../../README.md\u001b[39;00m\n\u001b[0;32m      4\u001b[0m \u001b[38;5;124;03m\"\"\"\u001b[39;00m\n\u001b[1;32m----> 6\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01mpandas_profiling\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mcontroller\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m pandas_decorator\n\u001b[0;32m      7\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01mpandas_profiling\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mprofile_report\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m ProfileReport\n\u001b[0;32m      8\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01mpandas_profiling\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mversion\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m __version__\n",
+      "File \u001b[1;32m~\\Anaconda3\\lib\\site-packages\\pandas_profiling\\controller\\pandas_decorator.py:4\u001b[0m, in \u001b[0;36m<module>\u001b[1;34m\u001b[0m\n\u001b[0;32m      1\u001b[0m \u001b[38;5;124;03m\"\"\"This file add the decorator on the DataFrame object.\"\"\"\u001b[39;00m\n\u001b[0;32m      2\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01mpandas\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m DataFrame\n\u001b[1;32m----> 4\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01mpandas_profiling\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mprofile_report\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m ProfileReport\n\u001b[0;32m      7\u001b[0m \u001b[38;5;28;01mdef\u001b[39;00m \u001b[38;5;21mprofile_report\u001b[39m(df: DataFrame, \u001b[38;5;241m*\u001b[39m\u001b[38;5;241m*\u001b[39mkwargs) \u001b[38;5;241m-\u001b[39m\u001b[38;5;241m>\u001b[39m ProfileReport:\n\u001b[0;32m      8\u001b[0m     \u001b[38;5;124;03m\"\"\"Profile a DataFrame.\u001b[39;00m\n\u001b[0;32m      9\u001b[0m \n\u001b[0;32m     10\u001b[0m \u001b[38;5;124;03m    Args:\u001b[39;00m\n\u001b[1;32m   (...)\u001b[0m\n\u001b[0;32m     15\u001b[0m \u001b[38;5;124;03m        A ProfileReport of the DataFrame.\u001b[39;00m\n\u001b[0;32m     16\u001b[0m \u001b[38;5;124;03m    \"\"\"\u001b[39;00m\n",
+      "File \u001b[1;32m~\\Anaconda3\\lib\\site-packages\\pandas_profiling\\profile_report.py:27\u001b[0m, in \u001b[0;36m<module>\u001b[1;34m\u001b[0m\n\u001b[0;32m     25\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01mpandas_profiling\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mreport\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mpresentation\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mcore\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m Root\n\u001b[0;32m     26\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01mpandas_profiling\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mreport\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mpresentation\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mcore\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mrenderable\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m Renderable\n\u001b[1;32m---> 27\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01mpandas_profiling\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mreport\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mpresentation\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mflavours\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mhtml\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mtemplates\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m (\n\u001b[0;32m     28\u001b[0m     create_html_assets,\n\u001b[0;32m     29\u001b[0m )\n\u001b[0;32m     30\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01mpandas_profiling\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mserialize_report\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m SerializeReport\n\u001b[0;32m     31\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01mpandas_profiling\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mutils\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mdataframe\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m hash_dataframe\n",
+      "File \u001b[1;32m~\\Anaconda3\\lib\\site-packages\\pandas_profiling\\report\\presentation\\flavours\\html\\__init__.py:1\u001b[0m, in \u001b[0;36m<module>\u001b[1;34m\u001b[0m\n\u001b[1;32m----> 1\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01mpandas_profiling\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mreport\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mpresentation\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mflavours\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mhtml\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01malerts\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m HTMLAlerts\n\u001b[0;32m      2\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01mpandas_profiling\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mreport\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mpresentation\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mflavours\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mhtml\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mcollapse\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m HTMLCollapse\n\u001b[0;32m      3\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01mpandas_profiling\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mreport\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mpresentation\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mflavours\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mhtml\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mcontainer\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m HTMLContainer\n",
+      "File \u001b[1;32m~\\Anaconda3\\lib\\site-packages\\pandas_profiling\\report\\presentation\\flavours\\html\\alerts.py:2\u001b[0m, in \u001b[0;36m<module>\u001b[1;34m\u001b[0m\n\u001b[0;32m      1\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01mpandas_profiling\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mreport\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mpresentation\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mcore\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01malerts\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m Alerts\n\u001b[1;32m----> 2\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01mpandas_profiling\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mreport\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mpresentation\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mflavours\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mhtml\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m templates\n\u001b[0;32m      5\u001b[0m \u001b[38;5;28;01mclass\u001b[39;00m \u001b[38;5;21;01mHTMLAlerts\u001b[39;00m(Alerts):\n\u001b[0;32m      6\u001b[0m     \u001b[38;5;28;01mdef\u001b[39;00m \u001b[38;5;21mrender\u001b[39m(\u001b[38;5;28mself\u001b[39m) \u001b[38;5;241m-\u001b[39m\u001b[38;5;241m>\u001b[39m \u001b[38;5;28mstr\u001b[39m:\n",
+      "File \u001b[1;32m~\\Anaconda3\\lib\\site-packages\\pandas_profiling\\report\\presentation\\flavours\\html\\templates.py:5\u001b[0m, in \u001b[0;36m<module>\u001b[1;34m\u001b[0m\n\u001b[0;32m      2\u001b[0m \u001b[38;5;28;01mimport\u001b[39;00m \u001b[38;5;21;01mshutil\u001b[39;00m\n\u001b[0;32m      3\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01mpathlib\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m Path\n\u001b[1;32m----> 5\u001b[0m \u001b[38;5;28;01mimport\u001b[39;00m \u001b[38;5;21;01mjinja2\u001b[39;00m\n\u001b[0;32m      7\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01mpandas_profiling\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mconfig\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m Settings, Theme\n\u001b[0;32m      8\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01mpandas_profiling\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mreport\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mformatters\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m fmt, fmt_badge, fmt_numeric, fmt_percent\n",
+      "File \u001b[1;32m~\\Anaconda3\\lib\\site-packages\\jinja2\\__init__.py:12\u001b[0m, in \u001b[0;36m<module>\u001b[1;34m\u001b[0m\n\u001b[0;32m     10\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mbccache\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m FileSystemBytecodeCache\n\u001b[0;32m     11\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mbccache\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m MemcachedBytecodeCache\n\u001b[1;32m---> 12\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01menvironment\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m Environment\n\u001b[0;32m     13\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01menvironment\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m Template\n\u001b[0;32m     14\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mexceptions\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m TemplateAssertionError\n",
+      "File \u001b[1;32m~\\Anaconda3\\lib\\site-packages\\jinja2\\environment.py:25\u001b[0m, in \u001b[0;36m<module>\u001b[1;34m\u001b[0m\n\u001b[0;32m     23\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mcompiler\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m CodeGenerator\n\u001b[0;32m     24\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mcompiler\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m generate\n\u001b[1;32m---> 25\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mdefaults\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m BLOCK_END_STRING\n\u001b[0;32m     26\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mdefaults\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m BLOCK_START_STRING\n\u001b[0;32m     27\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mdefaults\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m COMMENT_END_STRING\n",
+      "File \u001b[1;32m~\\Anaconda3\\lib\\site-packages\\jinja2\\defaults.py:3\u001b[0m, in \u001b[0;36m<module>\u001b[1;34m\u001b[0m\n\u001b[0;32m      1\u001b[0m \u001b[38;5;66;03m# -*- coding: utf-8 -*-\u001b[39;00m\n\u001b[0;32m      2\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01m_compat\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m range_type\n\u001b[1;32m----> 3\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mfilters\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m FILTERS \u001b[38;5;28;01mas\u001b[39;00m DEFAULT_FILTERS  \u001b[38;5;66;03m# noqa: F401\u001b[39;00m\n\u001b[0;32m      4\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mtests\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m TESTS \u001b[38;5;28;01mas\u001b[39;00m DEFAULT_TESTS  \u001b[38;5;66;03m# noqa: F401\u001b[39;00m\n\u001b[0;32m      5\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mutils\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m Cycler\n",
+      "File \u001b[1;32m~\\Anaconda3\\lib\\site-packages\\jinja2\\filters.py:13\u001b[0m, in \u001b[0;36m<module>\u001b[1;34m\u001b[0m\n\u001b[0;32m     11\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01mmarkupsafe\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m escape\n\u001b[0;32m     12\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01mmarkupsafe\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m Markup\n\u001b[1;32m---> 13\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01mmarkupsafe\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m soft_unicode\n\u001b[0;32m     15\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01m_compat\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m abc\n\u001b[0;32m     16\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01m_compat\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m imap\n",
+      "\u001b[1;31mImportError\u001b[0m: cannot import name 'soft_unicode' from 'markupsafe' (C:\\Users\\pheretz\\Anaconda3\\lib\\site-packages\\markupsafe\\__init__.py)"
+     ]
+    }
+   ],
    "source": [
     "from astropy.io import fits\n",
     "import pandas as pd\n",
     "from tabulate import tabulate\n",
     "import matplotlib.pyplot as plt\n",
-    "import numpy as np"
+    "import numpy as np\n",
+    "from pandas_profiling import ProfileReport"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 28,
-   "id": "9f7254ae",
+   "execution_count": 4,
+   "id": "2c5d25a0",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -50,16 +191,16 @@
   },
   {
    "cell_type": "markdown",
-   "id": "21130e7c",
+   "id": "f3af120a",
    "metadata": {},
    "source": [
-    "# Data Set Statistics"
+    "# Data Set Statistics & Profiling Report"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 33,
-   "id": "505ebefe",
+   "execution_count": 5,
+   "id": "174d2006",
    "metadata": {},
    "outputs": [
     {
@@ -70,6 +211,17 @@
       "Total sources with rings = 22\n",
       "Total sources with spirals = 5\n"
      ]
+    },
+    {
+     "ename": "NameError",
+     "evalue": "name 'ProfileReport' is not defined",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[1;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[1;31mNameError\u001b[0m                                 Traceback (most recent call last)",
+      "Input \u001b[1;32mIn [5]\u001b[0m, in \u001b[0;36m<cell line: 7>\u001b[1;34m()\u001b[0m\n\u001b[0;32m      4\u001b[0m \u001b[38;5;28mprint\u001b[39m(\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mTotal sources with rings = \u001b[39m\u001b[38;5;124m'\u001b[39m\u001b[38;5;241m+\u001b[39m\u001b[38;5;28mstr\u001b[39m(output1[\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mDisk_has_Rings\u001b[39m\u001b[38;5;124m'\u001b[39m]\u001b[38;5;241m.\u001b[39mvalue_counts()\u001b[38;5;241m.\u001b[39mTRUE))\n\u001b[0;32m      5\u001b[0m \u001b[38;5;28mprint\u001b[39m(\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mTotal sources with spirals = \u001b[39m\u001b[38;5;124m'\u001b[39m\u001b[38;5;241m+\u001b[39m\u001b[38;5;28mstr\u001b[39m(output1[\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mDisk_has_spirals\u001b[39m\u001b[38;5;124m'\u001b[39m]\u001b[38;5;241m.\u001b[39mvalue_counts()\u001b[38;5;241m.\u001b[39mTRUE))\n\u001b[1;32m----> 7\u001b[0m profile \u001b[38;5;241m=\u001b[39m \u001b[43mProfileReport\u001b[49m(output1, title\u001b[38;5;241m=\u001b[39m\u001b[38;5;124m\"\u001b[39m\u001b[38;5;124mPandas Profiling Report\u001b[39m\u001b[38;5;124m\"\u001b[39m)\n\u001b[0;32m      8\u001b[0m profile\u001b[38;5;241m.\u001b[39mto_widgets()\n",
+      "\u001b[1;31mNameError\u001b[0m: name 'ProfileReport' is not defined"
+     ]
     }
    ],
    "source": [
@@ -77,12 +229,15 @@
     "\n",
     "print('Total sources = '+str(output1['Star'].count()))\n",
     "print('Total sources with rings = '+str(output1['Disk_has_Rings'].value_counts().TRUE))\n",
-    "print('Total sources with spirals = '+str(output1['Disk_has_spirals'].value_counts().TRUE))\n"
+    "print('Total sources with spirals = '+str(output1['Disk_has_spirals'].value_counts().TRUE))\n",
+    "\n",
+    "profile = ProfileReport(output1, title=\"Pandas Profiling Report\")\n",
+    "profile.to_widgets()"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "f903dcbd",
+   "id": "31d44525",
    "metadata": {},
    "source": [
     "#  OH Detections vs. Characteristics"
@@ -91,7 +246,7 @@
   {
    "cell_type": "code",
    "execution_count": 21,
-   "id": "8ae1858c",
+   "id": "cecd016c",
    "metadata": {},
    "outputs": [
     {
@@ -136,7 +291,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "5b902f6b",
+   "id": "1c9dc466",
    "metadata": {},
    "source": [
     "Conclusion: \n",
@@ -149,7 +304,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "968b9cc9",
+   "id": "b00f3e5c",
    "metadata": {},
    "source": [
     "# HCN Detections vs. Characteristics"
@@ -157,8 +312,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 23,
-   "id": "b4484320",
+   "execution_count": 42,
+   "id": "6845abba",
    "metadata": {},
    "outputs": [
     {
@@ -207,7 +362,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "8c4b709d",
+   "id": "76348a97",
    "metadata": {},
    "source": [
     "Conclusion:\n",
@@ -216,7 +371,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "2e121caf",
+   "id": "73de8503",
    "metadata": {},
    "source": [
     "# C2H2 Detections vs. Characteristics"
@@ -224,8 +379,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 25,
-   "id": "764cc62a",
+   "execution_count": 43,
+   "id": "84ae81fd",
    "metadata": {
     "scrolled": true
    },
@@ -270,7 +425,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "138d8643",
+   "id": "1b281ca1",
    "metadata": {},
    "source": [
     "Conclusion:\n",
@@ -281,7 +436,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "7f871bb1",
+   "id": "efe57b51",
    "metadata": {},
    "source": [
     "# H2O Detections vs. Characteristics"
@@ -289,7 +444,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "47fadf21",
+   "id": "bfd63b09",
    "metadata": {},
    "source": [
     "H2O 15.17 um"
@@ -297,8 +452,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 27,
-   "id": "d3db0859",
+   "execution_count": 44,
+   "id": "d7a053d1",
    "metadata": {},
    "outputs": [
     {
@@ -349,7 +504,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "5cba5840",
+   "id": "1ef86865",
    "metadata": {},
    "source": [
     "Conclusion:\n",
@@ -361,7 +516,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "adb73cbf",
+   "id": "7ccfd263",
    "metadata": {},
    "source": [
     "H2O 17.22 um"
@@ -369,8 +524,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 34,
-   "id": "f02f8496",
+   "execution_count": 45,
+   "id": "a5dff517",
    "metadata": {
     "scrolled": false
    },
@@ -415,7 +570,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "b8a4a057",
+   "id": "9714f786",
    "metadata": {},
    "source": [
     "Conclusions:\n",
@@ -425,7 +580,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "14fdf8c3",
+   "id": "3073cef5",
    "metadata": {},
    "source": [
     "H2O 29.85 um (Outside bandpass of MIRI)"
@@ -433,8 +588,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 35,
-   "id": "921cbeab",
+   "execution_count": 46,
+   "id": "30294a36",
    "metadata": {
     "scrolled": true
    },
@@ -483,7 +638,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "34ecae0e",
+   "id": "1ce3b9ed",
    "metadata": {},
    "source": [
     "Conclusions:\n",
@@ -492,7 +647,15 @@
   },
   {
    "cell_type": "markdown",
-   "id": "1a2ce726",
+   "id": "18561e67",
+   "metadata": {},
+   "source": [
+    "# Question: Which targets have all three water signatures? Only one? Two? "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2510e37b",
    "metadata": {},
    "source": [
     "# CO2 Detections vs. Characteristics"
@@ -500,8 +663,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 36,
-   "id": "e1a5550a",
+   "execution_count": 47,
+   "id": "8c58664a",
    "metadata": {
     "scrolled": true
    },
@@ -548,7 +711,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "824bc8b6",
+   "id": "e59062e2",
    "metadata": {},
    "source": [
     "CO2 Conclusions:\n",
@@ -560,7 +723,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "d0349364",
+   "id": "0d1b802e",
    "metadata": {},
    "source": [
     "# NeII Detections vs. Characteristics"
@@ -568,8 +731,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 38,
-   "id": "17e457bc",
+   "execution_count": 48,
+   "id": "21727101",
    "metadata": {},
    "outputs": [
     {
@@ -633,7 +796,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "23f06d01",
+   "id": "dc60c3fd",
    "metadata": {},
    "source": [
     "Ne II Conclusions:\n",
@@ -644,7 +807,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "07ed5ba3",
+   "id": "194e4fbc",
    "metadata": {},
    "source": [
     "# Chemistry richness\n",
@@ -653,29 +816,87 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 40,
-   "id": "05db21ed",
+   "execution_count": 49,
+   "id": "a7eca527",
    "metadata": {},
    "outputs": [
     {
-     "ename": "KeyError",
-     "evalue": "('CO2_flux_uncertainty', 'H2O_29.85_uncertainty')",
-     "output_type": "error",
-     "traceback": [
-      "\u001b[1;31m---------------------------------------------------------------------------\u001b[0m",
-      "\u001b[1;31mKeyError\u001b[0m                                  Traceback (most recent call last)",
-      "File \u001b[1;32m~\\Anaconda3\\lib\\site-packages\\pandas\\core\\indexes\\base.py:3621\u001b[0m, in \u001b[0;36mIndex.get_loc\u001b[1;34m(self, key, method, tolerance)\u001b[0m\n\u001b[0;32m   3620\u001b[0m \u001b[38;5;28;01mtry\u001b[39;00m:\n\u001b[1;32m-> 3621\u001b[0m     \u001b[38;5;28;01mreturn\u001b[39;00m \u001b[38;5;28;43mself\u001b[39;49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43m_engine\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mget_loc\u001b[49m\u001b[43m(\u001b[49m\u001b[43mcasted_key\u001b[49m\u001b[43m)\u001b[49m\n\u001b[0;32m   3622\u001b[0m \u001b[38;5;28;01mexcept\u001b[39;00m \u001b[38;5;167;01mKeyError\u001b[39;00m \u001b[38;5;28;01mas\u001b[39;00m err:\n",
-      "File \u001b[1;32m~\\Anaconda3\\lib\\site-packages\\pandas\\_libs\\index.pyx:136\u001b[0m, in \u001b[0;36mpandas._libs.index.IndexEngine.get_loc\u001b[1;34m()\u001b[0m\n",
-      "File \u001b[1;32m~\\Anaconda3\\lib\\site-packages\\pandas\\_libs\\index.pyx:163\u001b[0m, in \u001b[0;36mpandas._libs.index.IndexEngine.get_loc\u001b[1;34m()\u001b[0m\n",
-      "File \u001b[1;32mpandas\\_libs\\hashtable_class_helper.pxi:5198\u001b[0m, in \u001b[0;36mpandas._libs.hashtable.PyObjectHashTable.get_item\u001b[1;34m()\u001b[0m\n",
-      "File \u001b[1;32mpandas\\_libs\\hashtable_class_helper.pxi:5206\u001b[0m, in \u001b[0;36mpandas._libs.hashtable.PyObjectHashTable.get_item\u001b[1;34m()\u001b[0m\n",
-      "\u001b[1;31mKeyError\u001b[0m: ('CO2_flux_uncertainty', 'H2O_29.85_uncertainty')",
-      "\nThe above exception was the direct cause of the following exception:\n",
-      "\u001b[1;31mKeyError\u001b[0m                                  Traceback (most recent call last)",
-      "Input \u001b[1;32mIn [40]\u001b[0m, in \u001b[0;36m<cell line: 14>\u001b[1;34m()\u001b[0m\n\u001b[0;32m      2\u001b[0m df \u001b[38;5;241m=\u001b[39m pd\u001b[38;5;241m.\u001b[39mDataFrame(output1, columns\u001b[38;5;241m=\u001b[39m [\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mStar\u001b[39m\u001b[38;5;124m'\u001b[39m,\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mDisk_has_Rings\u001b[39m\u001b[38;5;124m'\u001b[39m,\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mDisk_has_spirals\u001b[39m\u001b[38;5;124m'\u001b[39m,\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mDisk_Asymmetry\u001b[39m\u001b[38;5;124m'\u001b[39m,\n\u001b[0;32m      3\u001b[0m                                      \u001b[38;5;124m'\u001b[39m\u001b[38;5;124mStar_system\u001b[39m\u001b[38;5;124m'\u001b[39m,\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mSpectral_Type\u001b[39m\u001b[38;5;124m'\u001b[39m,\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mlog_tstar\u001b[39m\u001b[38;5;124m'\u001b[39m,\n\u001b[0;32m      4\u001b[0m                                      \u001b[38;5;124m'\u001b[39m\u001b[38;5;124mOH_23.2_microns\u001b[39m\u001b[38;5;124m'\u001b[39m,\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mOH_23.2_microns_uncertainty\u001b[39m\u001b[38;5;124m'\u001b[39m,\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mOH_27.6_microns\u001b[39m\u001b[38;5;124m'\u001b[39m,\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mOH_27.6_microns_uncertainty\u001b[39m\u001b[38;5;124m'\u001b[39m,\n\u001b[1;32m   (...)\u001b[0m\n\u001b[0;32m     11\u001b[0m                                     \u001b[38;5;124m'\u001b[39m\u001b[38;5;124mNeII_12.8_flux\u001b[39m\u001b[38;5;124m'\u001b[39m,\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mNeII_12.8_flux_uncertainty\u001b[39m\u001b[38;5;124m'\u001b[39m\n\u001b[0;32m     12\u001b[0m                                     ])\n\u001b[0;32m     13\u001b[0m \u001b[38;5;66;03m# suppress rows with -99 values\u001b[39;00m\n\u001b[1;32m---> 14\u001b[0m df_loc \u001b[38;5;241m=\u001b[39m df\u001b[38;5;241m.\u001b[39mloc[\u001b[43mdf\u001b[49m\u001b[43m[\u001b[49m\u001b[38;5;124;43m'\u001b[39;49m\u001b[38;5;124;43mCO2_flux_uncertainty\u001b[39;49m\u001b[38;5;124;43m'\u001b[39;49m\u001b[43m,\u001b[49m\u001b[38;5;124;43m'\u001b[39;49m\u001b[38;5;124;43mH2O_29.85_uncertainty\u001b[39;49m\u001b[38;5;124;43m'\u001b[39;49m\u001b[43m]\u001b[49m \u001b[38;5;241m!=\u001b[39m \u001b[38;5;241m-\u001b[39m\u001b[38;5;241m99\u001b[39m]\n\u001b[0;32m     15\u001b[0m \u001b[38;5;66;03m#df_loc.sort_values('OH_23.2_microns',ascending=False)\u001b[39;00m\n\u001b[0;32m     16\u001b[0m \u001b[38;5;66;03m# show table, print (df_loc)\u001b[39;00m\n\u001b[0;32m     17\u001b[0m \u001b[38;5;28mprint\u001b[39m(df_loc)\n",
-      "File \u001b[1;32m~\\Anaconda3\\lib\\site-packages\\pandas\\core\\frame.py:3505\u001b[0m, in \u001b[0;36mDataFrame.__getitem__\u001b[1;34m(self, key)\u001b[0m\n\u001b[0;32m   3503\u001b[0m \u001b[38;5;28;01mif\u001b[39;00m \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39mcolumns\u001b[38;5;241m.\u001b[39mnlevels \u001b[38;5;241m>\u001b[39m \u001b[38;5;241m1\u001b[39m:\n\u001b[0;32m   3504\u001b[0m     \u001b[38;5;28;01mreturn\u001b[39;00m \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_getitem_multilevel(key)\n\u001b[1;32m-> 3505\u001b[0m indexer \u001b[38;5;241m=\u001b[39m \u001b[38;5;28;43mself\u001b[39;49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mcolumns\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mget_loc\u001b[49m\u001b[43m(\u001b[49m\u001b[43mkey\u001b[49m\u001b[43m)\u001b[49m\n\u001b[0;32m   3506\u001b[0m \u001b[38;5;28;01mif\u001b[39;00m is_integer(indexer):\n\u001b[0;32m   3507\u001b[0m     indexer \u001b[38;5;241m=\u001b[39m [indexer]\n",
-      "File \u001b[1;32m~\\Anaconda3\\lib\\site-packages\\pandas\\core\\indexes\\base.py:3623\u001b[0m, in \u001b[0;36mIndex.get_loc\u001b[1;34m(self, key, method, tolerance)\u001b[0m\n\u001b[0;32m   3621\u001b[0m     \u001b[38;5;28;01mreturn\u001b[39;00m \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_engine\u001b[38;5;241m.\u001b[39mget_loc(casted_key)\n\u001b[0;32m   3622\u001b[0m \u001b[38;5;28;01mexcept\u001b[39;00m \u001b[38;5;167;01mKeyError\u001b[39;00m \u001b[38;5;28;01mas\u001b[39;00m err:\n\u001b[1;32m-> 3623\u001b[0m     \u001b[38;5;28;01mraise\u001b[39;00m \u001b[38;5;167;01mKeyError\u001b[39;00m(key) \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01merr\u001b[39;00m\n\u001b[0;32m   3624\u001b[0m \u001b[38;5;28;01mexcept\u001b[39;00m \u001b[38;5;167;01mTypeError\u001b[39;00m:\n\u001b[0;32m   3625\u001b[0m     \u001b[38;5;66;03m# If we have a listlike key, _check_indexing_error will raise\u001b[39;00m\n\u001b[0;32m   3626\u001b[0m     \u001b[38;5;66;03m#  InvalidIndexError. Otherwise we fall through and re-raise\u001b[39;00m\n\u001b[0;32m   3627\u001b[0m     \u001b[38;5;66;03m#  the TypeError.\u001b[39;00m\n\u001b[0;32m   3628\u001b[0m     \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_check_indexing_error(key)\n",
-      "\u001b[1;31mKeyError\u001b[0m: ('CO2_flux_uncertainty', 'H2O_29.85_uncertainty')"
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "          Star Disk_has_Rings Disk_has_spirals Disk_Asymmetry Star_system  \\\n",
+      "0       HT Lup          FALSE             TRUE          FALSE      Triple   \n",
+      "1       GW Lup           TRUE            FALSE          FALSE      Single   \n",
+      "2       IM Lup           TRUE             TRUE         UNSURE      Single   \n",
+      "3       RU Lup           TRUE            FALSE          FALSE      Single   \n",
+      "9       AS 205          FALSE             TRUE           TRUE      Triple   \n",
+      "17     WaOph 6           TRUE             TRUE           TRUE      Single   \n",
+      "18      AS 209           TRUE            FALSE         UNSURE      Single   \n",
+      "20      FZ Tau            -99              -99            -99      Binary   \n",
+      "24  IRAS 04385            -99              -99            -99      Single   \n",
+      "26      CI Tau           TRUE            FALSE         UNSURE         NaN   \n",
+      "\n",
+      "   Spectral_Type  log_tstar  OH_23.2_microns  OH_23.2_microns_uncertainty  \\\n",
+      "0             K2    5.90000     3.290000e-17                -9.900000e+01   \n",
+      "1           M1.5    6.30000     9.400000e-18                -9.900000e+01   \n",
+      "2             K5    5.70000     8.700000e-18                -9.900000e+01   \n",
+      "3             K7    5.70000     1.890000e-17                -9.900000e+01   \n",
+      "9             K5    5.80000     1.630000e-16                 5.800000e-18   \n",
+      "17            K6    5.50000     4.610000e-17                 1.300000e-18   \n",
+      "18            K5    6.00000     1.550000e-16                -9.900000e+01   \n",
+      "20          M0.5  -99.00000     1.770000e-17                -9.900000e+01   \n",
+      "24            M0  -99.00000     8.200000e-18                -9.900000e+01   \n",
+      "26          K5.5    6.39794     1.030000e-17                -9.900000e+01   \n",
+      "\n",
+      "    OH_27.6_microns  ...  H2O_15.17_microns  H2O_15.17_uncertainty  \\\n",
+      "0      3.110000e-17  ...       1.750000e-17          -9.900000e+01   \n",
+      "1      9.600000e-18  ...       1.700000e-18          -9.900000e+01   \n",
+      "2      8.900000e-18  ...       2.400000e-18          -9.900000e+01   \n",
+      "3      1.760000e-17  ...       2.500000e-17           1.300000e-18   \n",
+      "9      4.770000e-16  ...       1.160000e-16           6.500000e-18   \n",
+      "17     4.230000e-17  ...       1.570000e-17           7.000000e-19   \n",
+      "18     6.430000e-17  ...       1.570000e-17          -9.900000e+01   \n",
+      "20     1.990000e-16  ...       4.500000e-17           3.850000e-18   \n",
+      "24     4.520000e-17  ...       6.050000e-18           1.650000e-18   \n",
+      "26     1.290000e-17  ...       1.310000e-17           1.410000e-18   \n",
+      "\n",
+      "    H2O_17.22_microns  H2O_17.22_uncertainty  H2O_29.85_microns  \\\n",
+      "0        1.720000e-17          -9.900000e+01       1.170000e-14   \n",
+      "1        1.800000e-18          -9.900000e+01       3.400000e-18   \n",
+      "2        2.400000e-18          -9.900000e+01       3.000000e-18   \n",
+      "3        3.490000e-17           1.400000e-18       2.410000e-17   \n",
+      "9        1.820000e-16           7.400000e-18       9.350000e-17   \n",
+      "17       1.540000e-17           7.000000e-19       1.060000e-17   \n",
+      "18       1.030000e-17          -9.900000e+01       1.940000e-17   \n",
+      "20       6.580000e-17           2.220000e-18       3.470000e-17   \n",
+      "24       6.690000e-18          -9.900000e+01       2.890000e-17   \n",
+      "26       1.010000e-17           2.870000e-18       1.540000e-17   \n",
+      "\n",
+      "    H2O_29.85_uncertainty      CO2_flux  CO2_flux_uncertainty  NeII_12.8_flux  \\\n",
+      "0            1.500000e-18  5.580000e-17          1.080000e-17    9.600000e-17   \n",
+      "1           -9.900000e+01  2.080000e-17          1.300000e-18    7.000000e-18   \n",
+      "2           -9.900000e+01  8.600000e-18          1.500000e-18    6.100000e-17   \n",
+      "3            8.000000e-19  1.410000e-17          3.100000e-18    9.200000e-17   \n",
+      "9            4.800000e-18  2.330000e-16          1.600000e-17    2.700000e-16   \n",
+      "17           5.000000e-19  2.560000e-17          1.700000e-18    4.300000e-17   \n",
+      "18           3.730000e-18  1.810000e-16          5.180000e-17    1.400000e-16   \n",
+      "20           6.820000e-18  2.590000e-16          4.590000e-17    6.900000e-18   \n",
+      "24           8.850000e-18  3.260000e-17          7.610000e-18    1.040000e-17   \n",
+      "26          -9.900000e+01  5.860000e-18          1.090000e-18    6.530000e-18   \n",
+      "\n",
+      "    NeII_12.8_flux_uncertainty  \n",
+      "0                -9.900000e+01  \n",
+      "1                -9.900000e+01  \n",
+      "2                 1.600000e-17  \n",
+      "3                -9.900000e+01  \n",
+      "9                -9.900000e+01  \n",
+      "17               -9.900000e+01  \n",
+      "18               -9.900000e+01  \n",
+      "20               -9.900000e+01  \n",
+      "24                2.470000e-19  \n",
+      "26                6.560000e-19  \n",
+      "\n",
+      "[10 rows x 25 columns]\n"
      ]
     }
    ],
@@ -702,7 +923,23 @@
   {
    "cell_type": "code",
    "execution_count": null,
-   "id": "b79a5766",
+   "id": "f928e29f",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "8c686aa1",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c80b0875",
    "metadata": {},
    "outputs": [],
    "source": []
